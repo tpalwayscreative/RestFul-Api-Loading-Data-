@@ -52,6 +52,9 @@
 		31C72A291D83D33C00AEFAAC /* db_task.sql in Resources */ = {isa = PBXBuildFile; fileRef = 31C72A0C1D83D33B00AEFAAC /* db_task.sql */; };
 		31C72A2A1D83D33C00AEFAAC /* .htaccess in Resources */ = {isa = PBXBuildFile; fileRef = 31C72A0E1D83D33C00AEFAAC /* .htaccess */; };
 		31C72A2B1D83D33C00AEFAAC /* index.php in Resources */ = {isa = PBXBuildFile; fileRef = 31C72A0F1D83D33C00AEFAAC /* index.php */; };
+		31C72A2D1D83DDA100AEFAAC /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C72A2C1D83DDA100AEFAAC /* TaskViewController.swift */; };
+		31C72A2F1D83DE2500AEFAAC /* Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C72A2E1D83DE2500AEFAAC /* Tasks.swift */; };
+		31C72A311D83E3F200AEFAAC /* AsynTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C72A301D83E3F200AEFAAC /* AsynTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -102,6 +105,9 @@
 		31C72A0C1D83D33B00AEFAAC /* db_task.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = db_task.sql; sourceTree = "<group>"; };
 		31C72A0E1D83D33C00AEFAAC /* .htaccess */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .htaccess; sourceTree = "<group>"; };
 		31C72A0F1D83D33C00AEFAAC /* index.php */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.php; path = index.php; sourceTree = "<group>"; };
+		31C72A2C1D83DDA100AEFAAC /* TaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
+		31C72A2E1D83DE2500AEFAAC /* Tasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tasks.swift; sourceTree = "<group>"; };
+		31C72A301D83E3F200AEFAAC /* AsynTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsynTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +159,9 @@
 				31C729D41D83C65200AEFAAC /* User.swift */,
 				31C729E41D83C86900AEFAAC /* AsynUser.swift */,
 				31C729E81D83CA2E00AEFAAC /* LoginViewController.swift */,
+				31C72A2C1D83DDA100AEFAAC /* TaskViewController.swift */,
+				31C72A2E1D83DE2500AEFAAC /* Tasks.swift */,
+				31C72A301D83E3F200AEFAAC /* AsynTask.swift */,
 			);
 			path = "RestFul API";
 			sourceTree = "<group>";
@@ -366,6 +375,8 @@
 			files = (
 				31C729E91D83CA2E00AEFAAC /* LoginViewController.swift in Sources */,
 				31C729D51D83C65200AEFAAC /* User.swift in Sources */,
+				31C72A2D1D83DDA100AEFAAC /* TaskViewController.swift in Sources */,
+				31C72A311D83E3F200AEFAAC /* AsynTask.swift in Sources */,
 				31C729E71D83C9B400AEFAAC /* IJProgressView.swift in Sources */,
 				31C729C81D83C3D000AEFAAC /* RestFul_API.xcdatamodeld in Sources */,
 				31C729DF1D83C82D00AEFAAC /* HTTPSecurity.swift in Sources */,
@@ -375,6 +386,7 @@
 				31C729DD1D83C82D00AEFAAC /* HTTPRequestSerializer.swift in Sources */,
 				31C729E21D83C82D00AEFAAC /* HTTPUpload.swift in Sources */,
 				31C729C21D83C3D000AEFAAC /* RegisterViewController.swift in Sources */,
+				31C72A2F1D83DE2500AEFAAC /* Tasks.swift in Sources */,
 				31C729E01D83C82D00AEFAAC /* HTTPStatusCode.swift in Sources */,
 				31C729C01D83C3D000AEFAAC /* AppDelegate.swift in Sources */,
 				31C729E51D83C86900AEFAAC /* AsynUser.swift in Sources */,
@@ -529,6 +541,7 @@
 				31C729D31D83C3D000AEFAAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

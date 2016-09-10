@@ -1,5 +1,5 @@
 //
-//  AsynUser.swift
+//  AsynTask.swift
 //  RestFul API
 //
 //  Created by phong on 9/10/16.
@@ -8,90 +8,46 @@
 
 import UIKit
 
-class AsynUser: NSObject {
+class AsynTask: NSObject {
+
+    
     
     var view : AnyObject?
-    var user : Struct_User?
-    var userDefault : NSUserDefaults?
-    
-    init(view : AnyObject, user : Struct_User){
+    var task : StructTask?
+    var userDefault : NSUserDefaults
+    var tbView : UITableView?
+    init(view : AnyObject, task : StructTask,tbView: UITableView){
         
         self.view = view
-        self.user = user
-        self.userDefault  = NSUserDefaults()
+        self.task = task
+        self.userDefault = NSUserDefaults()
+        self.tbView = tbView
     }
-
-    func register() {
-        
-        
-        //let api_key : String = userDefault.valueForKey(Config.TAG_API_KEY) as! String
-        let request = HTTPTask()
-        //request.requestSerializer = HTTPRequestSerializer()
-       // request.requestSerializer.headers[Config.TAG_AUTHORIZATION] = api_key
-        let params = ["name":user!.name!,"email":user!.email!,"password":user!.password!]
-   
-        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/register" , parameters: params, completionHandler:
-            {(response: HTTPResponse) in
-                
-                if let data = response.responseObject as? NSData {
-                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
-                    print("response: \(str)") //prints the HTML of the page
-                    let jsonUser = JSONDecoder(data)
-                    if jsonUser["error"].bool
-                    {
-                        dispatch_async(dispatch_get_main_queue(),
-                            {
-                                ()-> Void in
-                                
-                                
-                                print(jsonUser)
-                                IJProgressView.shared.hideProgressView()
-                                
-                            }
-                        )
-                        print("Error")
-                    }
-                    else{
-                        
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            
-                            self.view!.performSegueWithIdentifier("segue_to_login", sender: nil)
-                            IJProgressView.shared.hideProgressView()
-                            
-                            print(jsonUser)
-                            
-                        })
-                    }
-                }
-        })
-
     
-        
-    }
-    func login(){
+    func getTasks() {
         
         
-        //let api_key : String = userDefault.valueForKey(Config.TAG_API_KEY) as! String
+        let api_key : String = userDefault.valueForKey("apiKey") as! String
         let request = HTTPTask()
-        //request.requestSerializer = HTTPRequestSerializer()
-        // request.requestSerializer.headers[Config.TAG_AUTHORIZATION] = api_key
-        let params = ["email":user!.email!,"password":user!.password!]
+        request.requestSerializer = HTTPRequestSerializer()
+        request.requestSerializer.headers["Authorization"] = api_key
+        let params = ["":""]
         
-        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/login" , parameters: params, completionHandler:
+        request.GET("http://tpalwayscreative.esy.es/task_manager/v1/tasks" , parameters: params, completionHandler:
             {(response: HTTPResponse) in
                 
                 if let data = response.responseObject as? NSData {
                     let str = NSString(data: data, encoding: NSUTF8StringEncoding)
                     print("response: \(str)") //prints the HTML of the page
-                    let jsonUser = JSONDecoder(data)
-                    if jsonUser["error"].bool
+                    let jsonTask = JSONDecoder(data)
+                    if jsonTask["error"].bool
                     {
                         dispatch_async(dispatch_get_main_queue(),
                             {
                                 ()-> Void in
                                 
                                 
-                                print(jsonUser)
+                                print(jsonTask)
                                 IJProgressView.shared.hideProgressView()
                                 
                             }
@@ -103,22 +59,64 @@ class AsynUser: NSObject {
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
                             
                             IJProgressView.shared.hideProgressView()
-                            self.view!.performSegueWithIdentifier("segue_to_task", sender: nil)
-                            print(jsonUser["apiKey"].string)
-                            self.userDefault?.setObject(jsonUser["apiKey"].string, forKey: "apiKey")
-    
+                            manageTask.addJsonDecoder(jsonTask)
+                            self.tbView?.reloadData()
+                            print(manageTask.list.count)
+                            
                         })
                     }
                 }
         })
-
-        
-        
-        
-        
+    
     }
     
     
     
+    func createTask() {
+        
+        
+        let api_key : String = userDefault.valueForKey("apiKey") as! String
+        let request = HTTPTask()
+        request.requestSerializer = HTTPRequestSerializer()
+        request.requestSerializer.headers["Authorization"] = api_key
+        let params = ["task":task!.task!]
+        
+        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/tasks" , parameters: params, completionHandler:
+            {(response: HTTPResponse) in
+                
+                if let data = response.responseObject as? NSData {
+                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
+                    print("response: \(str)") //prints the HTML of the page
+                    let jsonTask = JSONDecoder(data)
+                    if jsonTask["error"].bool
+                    {
+                        dispatch_async(dispatch_get_main_queue(),
+                            {
+                                ()-> Void in
+                                
+                                
+                                print(jsonTask)
+                                IJProgressView.shared.hideProgressView()
+                                
+                            }
+                        )
+                        print("Error")
+                    }
+                    else{
+                        
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            
+                            IJProgressView.shared.hideProgressView()
+                            manageTask.list.append(self.task!)
+                            self.tbView?.reloadData()
+                           
+                            
+                        })
+                    }
+                }
+        })
+        
+    }
 
+    
 }
