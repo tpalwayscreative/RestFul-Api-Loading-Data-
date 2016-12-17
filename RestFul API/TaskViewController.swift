@@ -14,23 +14,23 @@ class TaskViewController: UIViewController, UITableViewDelegate,UITableViewDataS
     @IBOutlet weak var textFiledTask: UITextField!
     @IBOutlet weak var tbView: UITableView!
     
-    var userDedault : NSUserDefaults!
+    var userDedault : UserDefaults!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        userDedault = NSUserDefaults()
+        userDedault = UserDefaults()
         self.tbView.delegate = self
         self.tbView.dataSource = self
         self.textFiledTask.delegate = self
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(TaskViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TaskViewController.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         // Do any additional setup after loading the view.
     }
 
     
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         self.view.endEditing(true)
         constraint.constant = 0.0
@@ -39,32 +39,32 @@ class TaskViewController: UIViewController, UITableViewDelegate,UITableViewDataS
     }
     
 
-    func keyboardWillShow(notification:NSNotification) {
+    func keyboardWillShow(_ notification:Notification) {
         
-        let userInfo:NSDictionary = notification.userInfo!
-        let keyboardFrame:NSValue = userInfo.valueForKey(UIKeyboardFrameEndUserInfoKey) as! NSValue
-        let keyboardRectangle = keyboardFrame.CGRectValue()
+        let userInfo:NSDictionary = notification.userInfo! as NSDictionary
+        let keyboardFrame:NSValue = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        let keyboardRectangle = keyboardFrame.cgRectValue
         let keyboardHeight = keyboardRectangle.height
         constraint.constant = CGFloat(keyboardHeight)
         
     }
     
     
-    private func scrollToBotton(){
+    fileprivate func scrollToBotton(){
         
         let numberOfSections = self.tbView.numberOfSections
-        let numberOfRows = self.tbView.numberOfRowsInSection(numberOfSections-1)
-        let indexPath = NSIndexPath(forRow: numberOfRows-1, inSection: numberOfSections-1)
+        let numberOfRows = self.tbView.numberOfRows(inSection: numberOfSections-1)
+        let indexPath = IndexPath(row: numberOfRows-1, section: numberOfSections-1)
         
-        self.tbView.scrollToRowAtIndexPath(indexPath,
-                                           atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
+        self.tbView.scrollToRow(at: indexPath,
+                                           at: UITableViewScrollPosition.middle, animated: true)
         tbView.reloadData()
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
-        var task = StructTask()
+        let task = StructTask()
         let syn = AsynTask(view: self,task: task,tbView:tbView)
         syn.getTasks()
         
@@ -74,42 +74,47 @@ class TaskViewController: UIViewController, UITableViewDelegate,UITableViewDataS
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func btnLogout(sender: UIButton) {
+    @IBAction func btnLogout(_ sender: UIButton) {
         
         
-        userDedault.setObject("", forKey: "apiKey")
-     performSegueWithIdentifier("segue_to_register", sender: nil)
+        userDedault.set("", forKey: "apiKey")
+     performSegue(withIdentifier: "segue_to_register", sender: nil)
         
         
     }
 
-    @IBAction func btnSend(sender: UIButton) {
+    @IBAction func btnSend(_ sender: UIButton) {
         
-        IJProgressView.shared.showProgressView(view)
+      
         
         var task = StructTask()
         task.task = textFiledTask.text
         
-        let syn = AsynTask(view: self,task: task,tbView: tbView)
-        syn.createTask()
+        if(textFiledTask.text != ""){
+            IJProgressView.shared.showProgressView(view)
+            let syn = AsynTask(view: self,task: task,tbView: tbView)
+            syn.createTask()
+            textFiledTask.text = ""
+        }
+        
         
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return manageTask.list.count
         
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         
         return 1
         
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
       
-        let cell = self.tbView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
+        let cell = self.tbView.dequeueReusableCell(withIdentifier: "cell")! as UITableViewCell
         cell.textLabel?.text  = manageTask.list[indexPath.row].task
         return cell
         

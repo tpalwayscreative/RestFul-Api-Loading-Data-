@@ -14,60 +14,63 @@ class AsynTask: NSObject {
     
     var view : AnyObject?
     var task : StructTask?
-    var userDefault : NSUserDefaults
+    var userDefault : UserDefaults
     var tbView : UITableView?
     init(view : AnyObject, task : StructTask,tbView: UITableView){
         
         self.view = view
         self.task = task
-        self.userDefault = NSUserDefaults()
+        self.userDefault = UserDefaults()
         self.tbView = tbView
     }
     
     func getTasks() {
         
         
-        let api_key : String = userDefault.valueForKey("apiKey") as! String
-        let request = HTTPTask()
-        request.requestSerializer = HTTPRequestSerializer()
-        request.requestSerializer.headers["Authorization"] = api_key
-        let params = ["":""]
         
-        request.GET("http://tpalwayscreative.esy.es/task_manager/v1/tasks" , parameters: params, completionHandler:
-            {(response: HTTPResponse) in
+        let api_key : String = userDefault.value(forKey: "apiKey") as! String
+        let headers = ["Authorization" : api_key]
+        do {
+            let opt = try HTTP.GET("http://tpalwayscreative.esy.es/task_manager/v1/tasks", parameters: nil,headers: headers)
+            opt.start { response in
                 
-                if let data = response.responseObject as? NSData {
-                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
+                let data = response.data
+                
+                if response.error == nil {
+                    let str = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
                     print("response: \(str)") //prints the HTML of the page
                     let jsonTask = JSONDecoder(data)
                     if jsonTask["error"].bool
                     {
-                        dispatch_async(dispatch_get_main_queue(),
-                            {
-                                ()-> Void in
-                                
-                                
-                                print(jsonTask)
-                                IJProgressView.shared.hideProgressView()
-                                
-                            }
+                        DispatchQueue.main.async(execute: {
+                            ()-> Void in
+                            IJProgressView.shared.hideProgressView()
+                        }
                         )
                         print("Error")
                     }
                     else{
                         
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            
                             
                             IJProgressView.shared.hideProgressView()
                             manageTask.addJsonDecoder(jsonTask)
                             self.tbView?.reloadData()
                             print(manageTask.list.count)
                             
+                            
                         })
                     }
                 }
-        })
-    
+                
+            }
+        } catch let error {
+            print("got an error creating the request: \(error)")
+        }
+        
+
+
     }
     
     
@@ -75,48 +78,52 @@ class AsynTask: NSObject {
     func createTask() {
         
         
-        let api_key : String = userDefault.valueForKey("apiKey") as! String
-        let request = HTTPTask()
-        request.requestSerializer = HTTPRequestSerializer()
-        request.requestSerializer.headers["Authorization"] = api_key
-        let params = ["task":task!.task!]
         
-        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/tasks" , parameters: params, completionHandler:
-            {(response: HTTPResponse) in
+        
+        let api_key : String = userDefault.value(forKey: "apiKey") as! String
+        let headers = ["Authorization" : api_key]
+        let params = ["task":task!.task!]
+        do {
+            let opt = try HTTP.POST("http://tpalwayscreative.esy.es/task_manager/v1/tasks", parameters: params,headers: headers)
+            opt.start { response in
                 
-                if let data = response.responseObject as? NSData {
-                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
+                let data = response.data
+                
+                if response.error == nil {
+                    let str = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
                     print("response: \(str)") //prints the HTML of the page
                     let jsonTask = JSONDecoder(data)
                     if jsonTask["error"].bool
                     {
-                        dispatch_async(dispatch_get_main_queue(),
-                            {
-                                ()-> Void in
-                                
-                                
-                                print(jsonTask)
-                                IJProgressView.shared.hideProgressView()
-                                
-                            }
+                        DispatchQueue.main.async(execute: {
+                            ()-> Void in
+                              print(jsonTask)
+                            IJProgressView.shared.hideProgressView()
+                        }
                         )
                         print("Error")
                     }
                     else{
                         
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            
+                            
                             
                             IJProgressView.shared.hideProgressView()
                             manageTask.list.append(self.task!)
                             self.tbView?.reloadData()
-                           
+
+                            
                             
                         })
                     }
                 }
-        })
+                
+            }
+        } catch let error {
+            print("got an error creating the request: \(error)")
+        }
         
     }
 
-    
 }

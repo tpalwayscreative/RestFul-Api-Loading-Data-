@@ -47,7 +47,7 @@ class Tasks: NSObject {
     
     var list = [StructTask]()
 
-    func addJsonDecoder(decoder : JSONDecoder)
+    func addJsonDecoder(_ decoder : JSONDecoder)
     {
         
         if let add = decoder["tasks"].array{

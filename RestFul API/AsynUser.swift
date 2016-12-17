@@ -12,109 +12,111 @@ class AsynUser: NSObject {
     
     var view : AnyObject?
     var user : Struct_User?
-    var userDefault : NSUserDefaults?
+    var userDefault : UserDefaults?
     
     init(view : AnyObject, user : Struct_User){
         
         self.view = view
         self.user = user
-        self.userDefault  = NSUserDefaults()
+        self.userDefault  = UserDefaults()
     }
 
     func register() {
         
         
-        //let api_key : String = userDefault.valueForKey(Config.TAG_API_KEY) as! String
-        let request = HTTPTask()
-        //request.requestSerializer = HTTPRequestSerializer()
-       // request.requestSerializer.headers[Config.TAG_AUTHORIZATION] = api_key
         let params = ["name":user!.name!,"email":user!.email!,"password":user!.password!]
-   
-        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/register" , parameters: params, completionHandler:
-            {(response: HTTPResponse) in
+        do {
+            let opt = try HTTP.POST("http://tpalwayscreative.esy.es/task_manager/v1/register", parameters: params,headers: nil)
+            opt.start { response in
                 
-                if let data = response.responseObject as? NSData {
-                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
+                let data = response.data
+                if response.error == nil {
+                    let str = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
                     print("response: \(str)") //prints the HTML of the page
                     let jsonUser = JSONDecoder(data)
+        
                     if jsonUser["error"].bool
                     {
-                        dispatch_async(dispatch_get_main_queue(),
-                            {
-                                ()-> Void in
-                                
-                                
-                                print(jsonUser)
-                                IJProgressView.shared.hideProgressView()
-                                
-                            }
+                        DispatchQueue.main.async(execute: {
+                            ()-> Void in
+                            IJProgressView.shared.hideProgressView()
+                        }
                         )
                         print("Error")
                     }
                     else{
                         
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        DispatchQueue.main.async(execute: { () -> Void in
                             
-                            self.view!.performSegueWithIdentifier("segue_to_login", sender: nil)
+                            
+                            self.view!.performSegue(withIdentifier: "segue_to_login", sender: nil)
                             IJProgressView.shared.hideProgressView()
                             
                             print(jsonUser)
+
                             
                         })
                     }
                 }
-        })
+                
+            }
+        } catch let error {
+            print("got an error creating the request: \(error)")
+        }
 
+        
+      
     
         
     }
     func login(){
         
         
-        //let api_key : String = userDefault.valueForKey(Config.TAG_API_KEY) as! String
-        let request = HTTPTask()
-        //request.requestSerializer = HTTPRequestSerializer()
-        // request.requestSerializer.headers[Config.TAG_AUTHORIZATION] = api_key
-        let params = ["email":user!.email!,"password":user!.password!]
         
-        request.POST("http://tpalwayscreative.esy.es/task_manager/v1/login" , parameters: params, completionHandler:
-            {(response: HTTPResponse) in
+        
+        let params = ["email":user!.email!,"password":user!.password!]
+        do {
+            let opt = try HTTP.POST("http://tpalwayscreative.esy.es/task_manager/v1/login", parameters: params,headers: nil)
+            opt.start { response in
                 
-                if let data = response.responseObject as? NSData {
-                    let str = NSString(data: data, encoding: NSUTF8StringEncoding)
+                let data = response.data
+                
+                if response.error == nil {
+                    let str = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
                     print("response: \(str)") //prints the HTML of the page
                     let jsonUser = JSONDecoder(data)
+                    
+    
                     if jsonUser["error"].bool
                     {
-                        dispatch_async(dispatch_get_main_queue(),
-                            {
-                                ()-> Void in
-                                
-                                
-                                print(jsonUser)
-                                IJProgressView.shared.hideProgressView()
-                                
-                            }
+                        DispatchQueue.main.async(execute: {
+                            ()-> Void in
+                            
+                            IJProgressView.shared.hideProgressView()
+                        }
                         )
                         print("Error")
                     }
                     else{
                         
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            
                             
                             IJProgressView.shared.hideProgressView()
-                            self.view!.performSegueWithIdentifier("segue_to_task", sender: nil)
-                            print(jsonUser["apiKey"].string)
-                            self.userDefault?.setObject(jsonUser["apiKey"].string, forKey: "apiKey")
-    
+                              self.userDefault?.set(jsonUser["apiKey"].string, forKey: "apiKey")
+                            self.view!.performSegue(withIdentifier: "segue_to_task", sender: nil)
+                         
+                    
                         })
                     }
                 }
-        })
+                
+            }
+        } catch let error {
+            print("got an error creating the request: \(error)")
+        }
+        
 
-        
-        
-        
         
     }
     
