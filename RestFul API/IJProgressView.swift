@@ -14,6 +14,8 @@ open class IJProgressView {
     var progressView = UIView()
     var activityIndicator = UIActivityIndicatorView()
     
+    
+    
     open class var shared: IJProgressView {
         struct Static {
             static let instance: IJProgressView = IJProgressView()
